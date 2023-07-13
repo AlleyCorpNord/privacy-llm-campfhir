@@ -49,7 +49,6 @@
     "@medplum/core": "^2.0.5",
     "@supabase/supabase-js": "^2.21.0",
     "chalk": "^5.2.0",
-    "cohere-ai": "^6.2.0",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "fast-glob": "^3.2.12",
