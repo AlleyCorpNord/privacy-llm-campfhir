@@ -3,6 +3,7 @@ import { LLMChain } from "langchain/chains";
 import { BufferMemory } from "langchain/memory";
 
 import { getCurrentUser } from "../helpers/currentUser.ts";
+import { MlflowLLM } from "../models/mlflowllm.ts";
 import { createOpenAIInstance } from "../models/openai.ts";
 
 import { EmitterOutputParser } from "../parsers/EmitterOutputParser.ts";
@@ -11,6 +12,8 @@ import { FhirQuestion } from "../tools/FhirQuestion.ts";
 
 // @ts-ignore
 import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts";
+
+import process from "process";
 
 export type AssistantAgent = {
   events: ModelOutputEmitter;
@@ -25,7 +28,15 @@ export async function createAssistantAgent(): Promise<AssistantAgent> {
 
   const agentPrompt = await assistantPrompt(currentUser, tools);
 
-  const llm = createOpenAIInstance({ temperature: 0 });
+  console.log(
+    "OPENAI_API_KEY is up ",
+    process.env.OPENAI_API_KEY ? true : false
+  );
+  const llm = process.env.OPENAI_API_KEY
+    ? createOpenAIInstance({ temperature: 0 })
+    : new MlflowLLM({
+        model_service_uri: process.env.MLFLOW_LLM_MODEL_SERVICE_URI,
+      });
   const memory = new BufferMemory({ memoryKey: "chat_history" });
   const llmChain = new LLMChain({
     llm,

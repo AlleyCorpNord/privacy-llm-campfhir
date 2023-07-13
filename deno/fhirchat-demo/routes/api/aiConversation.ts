@@ -79,7 +79,7 @@ function handler(req: Request): Response {
     }
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (process.env.MOCK_LLM_CALL === "true") {
     socket.addEventListener("message", mockHandler);
   } else {
     socket.addEventListener("message", questionHandler);
