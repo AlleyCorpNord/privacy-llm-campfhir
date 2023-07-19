@@ -14,6 +14,7 @@ import { getCurrentUser } from "../helpers/currentUser.ts";
 import { DateToolkit } from "../tools/DateToolkit.ts";
 import { FhirAPIServer } from "../tools/FhirAPIServer.ts";
 import { FhirDocsToolkit } from "../tools/FhirDocsToolkit.ts";
+
 import process from "process";
 
 export async function createFhirAgent(emitter: ModelOutputEmitter) {

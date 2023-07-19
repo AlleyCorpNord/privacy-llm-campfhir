@@ -4,6 +4,7 @@ import process from "process";
 
 import {
   createAssistantAgent,
+  createSequentialChain,
   type AssistantAgent,
 } from "$projectRoot/packages/fhirman/agents/assistant.ts";
 import { MODEL_OUTPUT_EVENT } from "$projectRoot/packages/fhirman/events/ModelOutputEmitter.ts";
@@ -24,7 +25,8 @@ function handler(req: Request): Response {
 
   async function questionHandler(event: MessageEvent) {
     if (!assistant) {
-      assistant = await createAssistantAgent();
+      assistant = process.env.OPENAI_API_KEY
+      ? await createAssistantAgent() : await createSequentialChain();
       assistant.events.on(
         MODEL_OUTPUT_EVENT,
         (message: string, agentName: string, toolName: string) => {
@@ -35,7 +37,7 @@ function handler(req: Request): Response {
       );
     }
     if (event.data === "ping") {
-      socket.send("pong");
+      socket.send(JSON.stringify({ response: "pong" }));
     } else if (event.data) {
       const response: ChainValues = await assistant.agent.call({
         input: event.data,
