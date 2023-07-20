@@ -25,8 +25,10 @@ function handler(req: Request): Response {
 
   async function questionHandler(event: MessageEvent) {
     if (!assistant) {
-      assistant = process.env.OPENAI_API_KEY
-      ? await createAssistantAgent() : await createSequentialChain();
+      assistant =
+        process.env.OPENAI_API_KEY || process.env.TGI_LLM_MODEL_SERVICE_URI
+          ? await createAssistantAgent()
+          : await createSequentialChain();
       assistant.events.on(
         MODEL_OUTPUT_EVENT,
         (message: string, agentName: string, toolName: string) => {
