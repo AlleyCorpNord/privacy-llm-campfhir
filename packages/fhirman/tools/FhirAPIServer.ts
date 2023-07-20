@@ -64,9 +64,11 @@ export class FhirAPIServer extends Tool {
   }
 }
 
-export async function call_fhir_server(values: ChainValues): Promise<string> {
+export async function call_fhir_server(
+  values: ChainValues
+): Promise<ChainValues> {
   const fhirApiServer = new FhirAPIServer();
   const response = await fhirApiServer.call(values["query"]);
   console.log("FhirAPIServer response: ", response);
-  return response;
+  return { fhir_results: response };
 }

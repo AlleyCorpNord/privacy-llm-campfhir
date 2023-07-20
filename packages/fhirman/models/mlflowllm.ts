@@ -45,12 +45,12 @@ export class MlflowLLM extends LLM implements MlflowLLMInput {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        inputs: [{ prompt: prompt }],
+        inputs: prompt,
       }),
-    })
-      .then((response) => response.json())
-      .then((response) => response.predictions[0]);
+    }).then((response) => response.text());
+    // .then((response) => response.predictions[0]);
     console.log("MLFlow response:", response);
+    // return `{"endpoint": "Patient", "params": {"_summary": "count"}}`;
     return response;
   }
 }
