@@ -3,7 +3,7 @@ import { JsonObject, Tool } from "langchain/tools";
 import querystring from "querystring";
 import { getFHIR, minimizeFhirResponse } from "../helpers/fhirApi/index.ts";
 
-import { ChainValues } from "langchain/chain";
+import { ChainValues } from "langchain/chains";
 import { SessionLogger } from "../helpers/sessionLogger.ts";
 
 export class FhirAPIServer extends Tool {
