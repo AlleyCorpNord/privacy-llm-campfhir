@@ -1,4 +1,4 @@
-import { NoOpOutputParser } from "langchain/output_parser/noop";
+import { BaseOutputParser } from "langchain/schema/output_parser";
 // @ts-ignore
 import {
   ModelOutputEmitter,
@@ -6,7 +6,10 @@ import {
 } from "../events/ModelOutputEmitter.ts";
 import { SessionLogger } from "../helpers/sessionLogger.ts";
 
-export class ChainEmitterOutputParser extends NoOpOutputParser {
+export class ChainEmitterOutputParser extends BaseOutputParser<string> {
+  lc_namespace = ["langchain", "output_parsers", "default"];
+
+  lc_serializable = true;
   chain_name: string;
   emitter: ModelOutputEmitter;
 
@@ -16,13 +19,11 @@ export class ChainEmitterOutputParser extends NoOpOutputParser {
     this.emitter = emitter;
   }
 
-  async parse(text: string) {
+  async parse(text: string): Promise<string> {
     try {
-      const output = await super.parse(text);
-
       this.log_chain_name();
 
-      output
+      text
         .split("\n")
         .filter((line) => line)
         .forEach((line) => {
@@ -31,13 +32,17 @@ export class ChainEmitterOutputParser extends NoOpOutputParser {
         });
       this.log("\n");
 
-      return output;
+      return Promise.resolve(text);
     } catch (error) {
       this.log("LLM Chain error: ", error);
       this.log("LLM Chain text: ", text);
       this.log("LLM Chain text type: ", typeof text);
       throw error;
     }
+  }
+
+  getFormatInstructions(): string {
+    return "";
   }
 
   log(message: string, ...extra: any[]) {
