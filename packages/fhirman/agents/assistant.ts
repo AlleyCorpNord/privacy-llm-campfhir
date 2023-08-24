@@ -4,6 +4,7 @@ import { BufferMemory } from "langchain/memory";
 
 import { getCurrentUser } from "../helpers/currentUser.ts";
 import { MlflowLLM } from "../models/mlflowllm.ts";
+import { RayServeLLM } from "../models/rayservellm.js";
 import { createOpenAIInstance } from "../models/openai.ts";
 import { TextGenerationInferenceLLM } from "../models/tgi.ts";
 
@@ -77,9 +78,9 @@ export async function createSequentialChain(): Promise<AssistantAgent> {
   const retrieve_data_prompt = retrieve_fhir_request_prompt();
   const summarize_data_prompt = summarize_fhir_results_prompt();
 
-  const retrieve_fhir_call_llm = new MlflowLLM({
+  const retrieve_fhir_call_llm = process.env.MLFLOW_LLM_MODEL_SERVICE_URI_RETRIEVE ? new MlflowLLM({
     model_service_uri: process.env.MLFLOW_LLM_MODEL_SERVICE_URI_RETRIEVE,
-  });
+  }): new RayServeLLM({model_service_uri: process.env.RAYSERVE_LLM_MODEL_SERVICE_URI_RETRIEVE,});
 
   const retrieve_fhir_call_llmChain = new LLMChain({
     llm: retrieve_fhir_call_llm,
@@ -97,8 +98,10 @@ export async function createSequentialChain(): Promise<AssistantAgent> {
     transform: call_fhir_server,
   });
 
-  const summarize_fhir_results_llm = new MlflowLLM({
+  const summarize_fhir_results_llm = process.env.MLFLOW_LLM_MODEL_SERVICE_URI_SUMMARIZE
+  ? new MlflowLLM({
     model_service_uri: process.env.MLFLOW_LLM_MODEL_SERVICE_URI_SUMMARIZE,
+  }): new RayServeLLM({model_service_uri: process.env.RAYSERVE_LLM_MODEL_SERVICE_URI_SUMMARIZE,
   });
   const summarize_fhir_results_llmChain = new LLMChain({
     llm: summarize_fhir_results_llm,
