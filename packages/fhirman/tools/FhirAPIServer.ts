@@ -42,7 +42,7 @@ export class FhirAPIServer extends Tool {
 
       console.log(`getFHIR result: ${JSON.stringify(result, null, 2)}`);
 
-      return JSON.stringify(result);
+      return JSON.stringify(result.total);
     } catch (error) {
       console.error("getFhir error: ", error);
 

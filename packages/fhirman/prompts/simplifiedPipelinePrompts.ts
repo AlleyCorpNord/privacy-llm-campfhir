@@ -12,16 +12,7 @@ import { PromptTemplate } from "https://esm.sh/langchain/prompts";
 
 const INSTRUCTIONS_RETRIEVE_FHIR_CALL = `{input}`;
 
-const INSTRUCTION_SUMMARIZE_FHIR_RESULTS = `** INSTRUCTIONS **
-The user will submit a question in plain English related to electronic health records database.
-Data from the electronic heath records database have been retrieved previously.
-Use the data provided to answer the question.
-The data are provided in a JSON format below:
-{fhir_results}
-Question: {input}
-
-Think before answering.  Only use the data provided for the answer.
-If the data don't have the answers, then say "I don't know".`;
+const INSTRUCTION_SUMMARIZE_FHIR_RESULTS = `{input} {fhir_results}`;
 
 export function retrieve_fhir_request_prompt() {
   return new PromptTemplate({
