@@ -3,12 +3,12 @@ import { JsonObject, Tool } from "langchain/tools";
 import querystring from "querystring";
 import { getFHIR, minimizeFhirResponse } from "../helpers/fhirApi/index.ts";
 
+import { ChainValues } from "langchain/chains";
 import { SessionLogger } from "../helpers/sessionLogger.ts";
 
 export class FhirAPIServer extends Tool {
   name = "FhirAPIServer";
-  description =
-    `Useful for querying a FHIR RESTFul API server. The input to this tool should be a valid JSON string query.  The format of the JSON input query is {{"endpoint": <ENDPOINT>, "params": {{"<PARAMETER code>": "<PARAMETER value>"}}}}.  The output is the FHIR API server JSON response.`;
+  description = `Useful for querying a FHIR RESTFul API server. The input to this tool should be a valid JSON string query.  The format of the JSON input query is {{"endpoint": <ENDPOINT>, "params": {{"<PARAMETER code>": "<PARAMETER value>"}}}}.  The output is the FHIR API server JSON response.`;
 
   constructor() {
     super();
@@ -42,7 +42,7 @@ export class FhirAPIServer extends Tool {
 
       console.log(`getFHIR result: ${JSON.stringify(result, null, 2)}`);
 
-      return JSON.stringify(result);
+      return JSON.stringify(result.total);
     } catch (error) {
       console.error("getFhir error: ", error);
 
@@ -62,4 +62,13 @@ export class FhirAPIServer extends Tool {
     SessionLogger.log("JSON: ", json);
     SessionLogger.separator();
   }
+}
+
+export async function call_fhir_server(
+  values: ChainValues
+): Promise<ChainValues> {
+  const fhirApiServer = new FhirAPIServer();
+  const response = await fhirApiServer.call(values["query"]);
+  console.log("FhirAPIServer response: ", response);
+  return { fhir_results: response };
 }
